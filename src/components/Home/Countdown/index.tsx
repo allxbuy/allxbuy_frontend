@@ -1,17 +1,28 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link"; // Added for Next.js routing
 
-const CounDown = () => {
+const CountDown = () => {
   const [days, setDays] = useState(0);
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
 
-  const deadline = "December, 31, 2024";
+  // Updated to a future date so the timer actually works!
+  const deadline = "December 31, 2026";
 
   const getTime = () => {
     const time = Date.parse(deadline) - Date.now();
+
+    // Safeguard: If the deadline has passed, keep the timer at 0
+    if (time <= 0) {
+      setDays(0);
+      setHours(0);
+      setMinutes(0);
+      setSeconds(0);
+      return;
+    }
 
     setDays(Math.floor(time / (1000 * 60 * 60 * 24)));
     setHours(Math.floor((time / (1000 * 60 * 60)) % 24));
@@ -20,116 +31,114 @@ const CounDown = () => {
   };
 
   useEffect(() => {
-    // @ts-ignore
-    const interval = setInterval(() => getTime(deadline), 1000);
+    // Run it once immediately so there's no 1-second delay/flash of 0s on load
+    getTime();
+    
+    // Fixed the interval call
+    const interval = setInterval(getTime, 1000);
 
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <section className="overflow-hidden py-20">
+    <section className="overflow-hidden py-16 lg:py-20">
       <div className="max-w-[1170px] w-full mx-auto px-4 sm:px-8 xl:px-0">
-        <div className="relative overflow-hidden z-1 rounded-lg bg-[#D0E9F3] p-4 sm:p-7.5 lg:p-10 xl:p-15">
-          <div className="max-w-[422px] w-full">
-            <span className="block font-medium text-custom-1 text-blue mb-2.5">
+        {/* Container fixed Z-index context */}
+        <div className="relative z-0 overflow-hidden rounded-2xl bg-[#D0E9F3] p-6 sm:p-10 lg:p-14 xl:p-16 shadow-sm">
+          
+          {/* Text Content (z-10 so it sits above the background images) */}
+          <div className="relative z-10 max-w-[450px] w-full pb-48 lg:pb-0">
+            <span className="block font-semibold text-sm text-blue-600 mb-3 uppercase tracking-wider">
               Don’t Miss!!
             </span>
 
-            <h2 className="font-bold text-dark text-xl lg:text-heading-4 xl:text-heading-3 mb-3">
+            <h2 className="font-bold text-slate-900 text-3xl lg:text-4xl xl:text-5xl leading-tight mb-4">
               Enhance Your Music Experience
             </h2>
 
-            <p>The Havit H206d is a wired PC headphone.</p>
+            <p className="text-slate-700 text-lg mb-8">
+              The Havit H206d is a premium wired PC headphone built for deep bass and comfort.
+            </p>
 
-            {/* <!-- Countdown timer --> */}
-            <div
-              className="flex flex-wrap gap-6 mt-6"
-              x-data="timer()"
-              x-init="countdown()"
-            >
-              {/* <!-- timer day --> */}
-              <div>
-                <span
-                  className="min-w-[64px] h-14.5 font-semibold text-xl lg:text-3xl text-dark rounded-lg flex items-center justify-center bg-white shadow-2 px-4 mb-2"
-                  x-text="days"
-                >
-                  {" "}
-                  {days < 10 ? "0" + days : days}{" "}
+            {/* */}
+            <div className="flex flex-wrap gap-4 sm:gap-6 mb-10">
+              
+              {/* */}
+              <div className="flex flex-col items-center">
+                <span className="w-16 h-16 sm:w-18 sm:h-18 font-bold text-2xl sm:text-3xl text-blue-600 rounded-xl flex items-center justify-center bg-white shadow-sm mb-2">
+                  {days < 10 ? "0" + days : days}
                 </span>
-                <span className="block text-custom-sm text-dark text-center">
+                <span className="block text-xs sm:text-sm font-medium text-slate-600 uppercase tracking-wide text-center">
                   Days
                 </span>
               </div>
 
-              {/* <!-- timer hours --> */}
-              <div>
-                <span
-                  className="min-w-[64px] h-14.5 font-semibold text-xl lg:text-3xl text-dark rounded-lg flex items-center justify-center bg-white shadow-2 px-4 mb-2"
-                  x-text="hours"
-                >
-                  {" "}
-                  {hours < 10 ? "0" + hours : hours}{" "}
+              {/* */}
+              <div className="flex flex-col items-center">
+                <span className="w-16 h-16 sm:w-18 sm:h-18 font-bold text-2xl sm:text-3xl text-blue-600 rounded-xl flex items-center justify-center bg-white shadow-sm mb-2">
+                  {hours < 10 ? "0" + hours : hours}
                 </span>
-                <span className="block text-custom-sm text-dark text-center">
+                <span className="block text-xs sm:text-sm font-medium text-slate-600 uppercase tracking-wide text-center">
                   Hours
                 </span>
               </div>
 
-              {/* <!-- timer minutes --> */}
-              <div>
-                <span
-                  className="min-w-[64px] h-14.5 font-semibold text-xl lg:text-3xl text-dark rounded-lg flex items-center justify-center bg-white shadow-2 px-4 mb-2"
-                  x-text="minutes"
-                >
-                  {minutes < 10 ? "0" + minutes : minutes}{" "}
+              {/* */}
+              <div className="flex flex-col items-center">
+                <span className="w-16 h-16 sm:w-18 sm:h-18 font-bold text-2xl sm:text-3xl text-blue-600 rounded-xl flex items-center justify-center bg-white shadow-sm mb-2">
+                  {minutes < 10 ? "0" + minutes : minutes}
                 </span>
-                <span className="block text-custom-sm text-dark text-center">
-                  Minutes
+                <span className="block text-xs sm:text-sm font-medium text-slate-600 uppercase tracking-wide text-center">
+                  Mins
                 </span>
               </div>
 
-              {/* <!-- timer seconds --> */}
-              <div>
-                <span
-                  className="min-w-[64px] h-14.5 font-semibold text-xl lg:text-3xl text-dark rounded-lg flex items-center justify-center bg-white shadow-2 px-4 mb-2"
-                  x-text="seconds"
-                >
-                  {seconds < 10 ? "0" + seconds : seconds}{" "}
+              {/* */}
+              <div className="flex flex-col items-center">
+                <span className="w-16 h-16 sm:w-18 sm:h-18 font-bold text-2xl sm:text-3xl text-red-500 rounded-xl flex items-center justify-center bg-white shadow-sm mb-2 transition-colors duration-300">
+                  {seconds < 10 ? "0" + seconds : seconds}
                 </span>
-                <span className="block text-custom-sm text-dark text-center">
-                  Seconds
+                <span className="block text-xs sm:text-sm font-medium text-slate-600 uppercase tracking-wide text-center">
+                  Secs
                 </span>
               </div>
             </div>
-            {/* <!-- Countdown timer ends --> */}
+            {/* */}
 
-            <a
-              href="#"
-              className="inline-flex font-medium text-custom-sm text-white bg-blue py-3 px-9.5 rounded-md ease-out duration-200 hover:bg-blue-dark mt-7.5"
+            <Link
+              href="/shop"
+              className="inline-flex items-center justify-center font-semibold text-sm text-white bg-blue-600 py-3.5 px-10 rounded-lg transition-all duration-300 hover:bg-blue-700 hover:shadow-lg hover:-translate-y-1"
             >
               Check it Out!
-            </a>
+            </Link>
           </div>
 
-          {/* <!-- bg shapes --> */}
-          <Image
-            src="/images/countdown/countdown-bg.png"
-            alt="bg shapes"
-            className="hidden sm:block absolute right-0 bottom-0 -z-1"
-            width={737}
-            height={482}
-          />
-          <Image
-            src="/images/countdown/countdown-01.png"
-            alt="product"
-            className="hidden lg:block absolute right-4 xl:right-33 bottom-4 xl:bottom-10 -z-1"
-            width={411}
-            height={376}
-          />
+          {/* */}
+          <div className="absolute right-0 bottom-0 z-0 h-full w-full pointer-events-none">
+            <Image
+              src="/images/countdown/countdown-bg.png"
+              alt="Background texture"
+              className="hidden sm:block absolute right-0 bottom-0 object-cover opacity-60"
+              width={737}
+              height={482}
+            />
+            
+            {/* Product image (position adjusted for mobile and desktop) */}
+            <div className="absolute -bottom-10 -right-10 w-[250px] sm:w-[350px] lg:bottom-4 lg:right-10 xl:right-32 lg:w-[411px]">
+              <Image
+                src="/images/countdown/countdown-01.png"
+                alt="Havit H206d Headphone"
+                width={411}
+                height={376}
+                className="object-contain drop-shadow-xl transition-transform duration-700 hover:scale-105"
+              />
+            </div>
+          </div>
+
         </div>
       </div>
     </section>
   );
 };
 
-export default CounDown;
+export default CountDown;
