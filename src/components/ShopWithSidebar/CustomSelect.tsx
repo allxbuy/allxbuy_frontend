@@ -1,22 +1,34 @@
+"use client";
 import React, { useState, useEffect, useRef } from "react";
 
-const CustomSelect = ({ options }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(options[0]);
-  const selectRef = useRef(null);
+type Option = {
+  label: string;
+  value?: string;
+};
 
-  // Function to close the dropdown when a click occurs outside the component
-  const handleClickOutside = (event) => {
-    if (selectRef.current && !selectRef.current.contains(event.target)) {
+type Props = {
+  options: Option[];
+};
+
+const CustomSelect = ({ options }: Props) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedOption, setSelectedOption] = useState<Option>(options[0]);
+
+  const selectRef = useRef<HTMLDivElement | null>(null);
+
+  // Close dropdown when clicking outside
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      selectRef.current &&
+      !selectRef.current.contains(event.target as Node)
+    ) {
       setIsOpen(false);
     }
   };
 
   useEffect(() => {
-    // Add a click event listener to the document
     document.addEventListener("click", handleClickOutside);
 
-    // Clean up the event listener when the component unmounts
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
@@ -26,9 +38,9 @@ const CustomSelect = ({ options }) => {
     setIsOpen(!isOpen);
   };
 
-  const handleOptionClick = (option) => {
+  const handleOptionClick = (option: Option) => {
     setSelectedOption(option);
-    toggleDropdown();
+    setIsOpen(false);
   };
 
   return (
@@ -44,6 +56,7 @@ const CustomSelect = ({ options }) => {
       >
         {selectedOption.label}
       </div>
+
       <div className={`select-items ${isOpen ? "" : "select-hide"}`}>
         {options.slice(1).map((option, index) => (
           <div
