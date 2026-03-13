@@ -3,10 +3,11 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
 import Link from "next/link";
 import Image from "next/image";
-
+import { getHomepageBanners } from "@/services/bannerService";
 // Import Swiper styles
 import "swiper/css/pagination";
 import "swiper/css";
+import { useEffect, useState } from "react";
 
 // Moved slide data to an array for cleaner, DRY code
 const slideData = [
@@ -24,9 +25,67 @@ const slideData = [
     image: "/images/hero/hero-01.png", // Replace with a different image
     link: "#",
   },
-];
 
+  
+];
+interface Banner {
+  _id: string;
+  title: string;
+  subtitle?: string;
+  description?: string;
+  imageUrl: string;
+  buttonText?: string;
+  position: number;
+  isActive: boolean;
+}
 const HeroCarousel = () => {
+
+const [banners, setBanners] = useState([]);
+const [error, setError] = useState("");
+
+
+const [slideData, setSlideData] = useState([{
+    discount: "30%",
+    title: "True Wireless Noise Cancelling Headphone",
+    description: "Experience premium sound with our latest noise-cancelling technology. Perfect for commutes and focus time.",
+    image: "/images/hero/hero-01.png",
+    link: "#", // Replace with actual product link
+  },
+  {
+    discount: "20%",
+    title: "Ultra-Thin Smart Watch Series X",
+    description: "Track your fitness, stay connected, and look stylish with our slimmest smartwatch yet.",
+    image: "/images/hero/hero-01.png", // Replace with a different image
+    link: "#",
+  },
+]);
+
+    useEffect(() => {
+    const loadBanners = async () => {
+      try {
+        const data = await getHomepageBanners();
+        setBanners(data.data);
+        const trasnfromedData = data.data.heroCarousel.map((banner: Banner) => ({
+
+          discount: banner.subtitle || "20% off",
+          title: banner.title,
+          description: banner.description || "Don't miss out on our exclusive offer! Shop now and save big on your favorite products.",
+          image: banner.imageUrl,
+          link: "#", // You can replace this with a dynamic link if available
+        }));
+        setSlideData(trasnfromedData);
+      } catch (err) {
+        console.log("Error loading banners:", err);
+        setError("something went wrong while loading banners");
+      }
+    };
+
+    loadBanners();
+  }, []);
+
+  {
+    console.log("Loaded banners:", banners);
+  }
   return (
     <Swiper
       spaceBetween={0}
